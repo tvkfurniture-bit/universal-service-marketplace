@@ -1,1 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join as a Verified Professional | Universal Marketplace</title>
+  <style>
+    :root {
+      --primary: #0F172A;
+      --primary-light: #1E293B;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --border-focus: #2563EB;
+      --text: #0F172A;
+      --muted: #64748B;
+      --success: #059669;
+      --success-bg: #ECFDF5;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 24px 16px 60px 16px; -webkit-font-smoothing: antialiased; line-height: 1.5; }
+
+    /* Top Nav */
+    header { max-width: 680px; margin: 0 auto 20px auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 16px; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-badge { background: var(--accent); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .back-link { font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--accent); }
+
+    /* Wizard Container Card */
+    .signup-card { max-width: 680px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(20px, 4vw, 36px); box-shadow: var(--shadow-card); }
+    h1 { font-size: clamp(22px, 4vw, 28px); font-weight: 800; color: var(--primary); margin-bottom: 8px; letter-spacing: -0.4px; }
+    .subtitle { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+
+    /* Entitlement Benefit Banner */
+    .benefit-banner { background: var(--success-bg); border: 1px solid #A7F3D0; padding: 14px 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; gap: 12px; align-items: center; }
+    .benefit-icon { font-size: 24px; color: var(--success); }
+    .benefit-text { font-size: 13px; color: #065F46; line-height: 1.4; }
+
+    /* Form Design */
+    .form-group { margin-bottom: 18px; }
+    .form-row { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 640px) {
+      .form-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--primary); }
+    .label-hint { font-weight: 400; color: var(--muted); font-size: 12px; }
+    input, select, textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; color: var(--text); background: #fff; min-height: 48px; transition: border-color 0.15s; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--border-focus); }
+
+    /* Buttons */
+    .btn-submit { background: var(--accent); color: #fff; border: none; width: 100%; padding: 14px; font-size: 16px; font-weight: 700; border-radius: var(--radius-sm); cursor: pointer; min-height: 50px; margin-top: 14px; transition: background 0.15s; }
+    .btn-submit:hover { background: var(--accent-hover); }
+    .btn-submit:disabled { background: #94A3B8; cursor: not-allowed; }
+
+    /* Section Subheaders */
+    .section-divider { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 28px 0 18px 0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="?" class="logo">
+      UNIVERSAL MARKETPLACE <span class="logo-badge">PRO</span>
+    </a>
+    <a href="?" class="back-link">&larr; Marketplace</a>
+  </header>
+
+  <div class="signup-card">
+    <h1>List Your Professional Services</h1>
+    <p class="subtitle">Publish your verified mini-site storefront and receive qualified local leads directly in your email.</p>
+
+    <!-- 3 Free Leads Benefit Callout -->
+    <div class="benefit-banner">
+      <div class="benefit-icon">&#10004;</div>
+      <div class="benefit-text">
+        <strong>New Provider Welcome Grant:</strong> Your first <strong>3 qualified customer lead connections</strong> are 100% free. No monthly subscription or credit card required.
+      </div>
+    </div>
+
+    <form id="signupForm" onsubmit="handleRegistrationSubmit(event)">
+      <!-- Section 1: Business Identity -->
+      <div class="section-divider">1. Professional Identity</div>
+
+      <div class="form-group">
+        <label for="displayName">Professional or Business Name <span class="label-hint">(Shown on your public storefront)</span></label>
+        <input type="text" id="displayName" required placeholder="e.g., Apex Carpentry & Architectural Joinery" autocomplete="organization">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="providerType">Entity Classification</label>
+          <select id="providerType">
+            <option value="INDIVIDUAL">Solo Professional / Freelancer</option>
+            <option value="BUSINESS" selected>Local Business / Trade Company</option>
+            <option value="AGENCY">Agency / General Contractor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="subcatSelect">Primary Trade Domain</label>
+          <select id="subcatSelect" required></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="websiteUrl">Website or Portfolio Link <span class="label-hint">(Optional — aids verification)</span></label>
+        <input type="url" id="websiteUrl" placeholder="https://yourbusiness.com" autocomplete="url">
+      </div>
+
+      <!-- Section 2: Operating Envelope & Rates -->
+      <div class="section-divider">2. Service Envelope & Capabilities</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="locality">Base Operating Locality / City</label>
+          <input type="text" id="locality" required placeholder="Springfield" autocomplete="address-level2">
+        </div>
+        <div class="form-group">
+          <label for="radiusKm">Radial Service Area</label>
+          <select id="radiusKm">
+            <option value="15">Within 15 km</option>
+            <option value="25" selected>Within 25 km</option>
+            <option value="50">Within 50 km</option>
+            <option value="100">Within 100 km (Regional)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="serviceMode">Fulfillment Mode</label>
+          <select id="serviceMode">
+            <option value="ONSITE" selected>On-Site (Local Radial Site Visits)</option>
+            <option value="ONLINE">Remote / Online Services Only</option>
+            <option value="HYBRID">Hybrid (Both On-Site & Digital)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="baseRate">Starting Estimate / Rate ($)</label>
+          <input type="number" id="baseRate" value="50" min="0" step="5">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="customSkills">Specialized Skills & Capabilities <span class="label-hint">(Comma-separated keywords for search matching)</span></label>
+        <input type="text" id="customSkills" placeholder="e.g., custom cabinetry, antique restoration, staircase installation">
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Professional Bio & Experience Summary</label>
+        <textarea id="bio" rows="3" placeholder="Describe your experience, certifications, warranties, and team size..."></textarea>
+      </div>
+
+      <!-- Section 3: Contact & Account Binding -->
+      <div class="section-divider">3. Contact & Dispatch Details</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Business Email <span class="label-hint">(Lead notifications delivered here)</span></label>
+          <input type="email" id="email" required placeholder="ops@yourbusiness.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="phone">Direct Telephone <span class="label-hint">(Unlocked for connected customers)</span></label>
+          <input type="tel" id="phone" required placeholder="+15550198283" autocomplete="tel">
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">Submit Registration & Activate 3 Free Leads</button>
+    </form>
+  </div>
+
+  <script>
+    var DRAFT_CACHE_KEY = 'PROVIDER_SIGNUP_DRAFT';
+
+    window.addEventListener('DOMContentLoaded', function () {
+      // 1. Fetch dynamic categories from database via RPC
+      google.script.run
+        .withSuccessHandler(function (res) {
+          if (!res || !res.success) return;
+          var sel = document.getElementById('subcatSelect');
+          sel.innerHTML = '';
+          res.subcategories.forEach(function (s) {
+            var opt = document.createElement('option');
+            opt.value = s.subcategory_id;
+            opt.text = s.subcategory_name;
+            sel.appendChild(opt);
+          });
+          // Restore draft subcategory selection if saved
+          restoreDraftInputs();
+        })
+        .getMarketplaceCatalogRpc();
+
+      // 2. Attach draft auto-save listeners on form inputs
+      var formInputs = document.querySelectorAll('#signupForm input, #signupForm select, #signupForm textarea');
+      formInputs.forEach(function (el) {
+        el.addEventListener('input', persistDraftInputs);
+      });
+    });
+
+    function persistDraftInputs() {
+      try {
+        var draft = {
+          displayName: document.getElementById('displayName').value,
+          providerType: document.getElementById('providerType').value,
+          subcategoryId: document.getElementById('subcatSelect').value,
+          websiteUrl: document.getElementById('websiteUrl').value,
+          locality: document.getElementById('locality').value,
+          radiusKm: document.getElementById('radiusKm').value,
+          serviceMode: document.getElementById('serviceMode').value,
+          baseRate: document.getElementById('baseRate').value,
+          customSkills: document.getElementById('customSkills').value,
+          bio: document.getElementById('bio').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value
+        };
+        localStorage.setItem(DRAFT_CACHE_KEY, JSON.stringify(draft));
+      } catch (e) {
+        // LocalStorage disabled or quota full
+      }
+    }
+
+    function restoreDraftInputs() {
+      try {
+        var savedJson = localStorage.getItem(DRAFT_CACHE_KEY);
+        if (!savedJson) return;
+        var draft = JSON.parse(savedJson);
+
+        if (draft.displayName) document.getElementById('displayName').value = draft.displayName;
+        if (draft.providerType) document.getElementById('providerType').value = draft.providerType;
+        if (draft.subcategoryId) document.getElementById('subcatSelect').value = draft.subcategoryId;
+        if (draft.websiteUrl) document.getElementById('websiteUrl').value = draft.websiteUrl;
+        if (draft.locality) document.getElementById('locality').value = draft.locality;
+        if (draft.radiusKm) document.getElementById('radiusKm').value = draft.radiusKm;
+        if (draft.serviceMode) document.getElementById('serviceMode').value = draft.serviceMode;
+        if (draft.baseRate) document.getElementById('baseRate').value = draft.baseRate;
+        if (draft.customSkills) document.getElementById('customSkills').value = draft.customSkills;
+        if (draft.bio) document.getElementById('bio').value = draft.bio;
+        if (draft.email) document.getElementById('email').value = draft.email;
+        if (draft.phone) document.getElementById('phone').value = draft.phone;
+      } catch (e) {
+        // Ignore draft parse failure
+      }
+    }
+
+    function handleRegistrationSubmit(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = 'Creating Profile & Activating Leads...';
+
+      var payload = {
+        displayName: document.getElementById('displayName').value.trim(),
+        providerType: document.getElementById('providerType').value,
+        subcategoryId: document.getElementById('subcatSelect').value,
+        websiteUrl: document.getElementById('websiteUrl').value.trim(),
+        locality: document.getElementById('locality').value.trim(),
+        radiusKm: parseFloat(document.getElementById('radiusKm').value),
+        serviceMode: document.getElementById('serviceMode').value,
+        baseRate: parseFloat(document.getElementById('baseRate').value) || 50.0,
+        customSkills: document.getElementById('customSkills').value.trim(),
+        bio: document.getElementById('bio').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim()
+      };
+
+      google.script.run
+        .withSuccessHandler(function (res) {
+          btn.disabled = false;
+          btn.innerText = 'Submit Registration & Activate 3 Free Leads';
+
+          if (res && res.success) {
+            // Clear saved draft on successful submission
+            try { localStorage.removeItem(DRAFT_CACHE_KEY); } catch (e) {}
+            alert('Registration approved! 3 free lead credits have been activated.\n\nRedirecting to your public mini-site.');
+            window.location.href = '?page=profile&slug=' + encodeURIComponent(res.profileSlug);
+          } else {
+            alert('Registration notice: ' + (res.error || 'Please verify your information and try again.'));
+          }
+        })
+        .withFailureHandler(function (err) {
+          btn.disabled = false;
+          btn.innerText = 'Submit Registration & Activate 3 Free Leads';
+          alert('Network communication error: ' + err.message);
+        })
+        .registerProviderRpc(payload);
+    }
+  </script>
+</body>
+</html>
