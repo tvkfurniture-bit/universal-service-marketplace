@@ -1,1 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Profile | Universal Marketplace</title>
+  <style>
+    :root {
+      --primary: #0F172A;
+      --primary-light: #1E293B;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --muted: #64748B;
+      --success: #059669;
+      --success-bg: #ECFDF5;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-subtle: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --shadow-dock: 0 -4px 6px -1px rgba(0,0,0,0.05);
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 96px; -webkit-font-smoothing: antialiased; line-height: 1.5; }
+
+    /* Top Navigation */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; }
+    .nav-inner { max-width: 1040px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 16px; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-badge { background: var(--accent); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .back-link { font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .back-link:hover { color: var(--accent); }
+
+    /* Profile Hero Section */
+    .profile-hero { background: var(--surface); border-bottom: 1px solid var(--border); padding: 36px 20px; }
+    .hero-container { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    @media (min-width: 768px) {
+      .hero-container { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+
+    .badge-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+    .badge-trust { background: var(--success-bg); color: var(--success); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-type { background: #F1F5F9; color: var(--muted); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; }
+
+    .provider-title { font-size: clamp(24px, 4vw, 32px); font-weight: 800; color: var(--primary); margin-bottom: 8px; letter-spacing: -0.5px; }
+    
+    .meta-row { display: flex; gap: 18px; font-size: 14px; color: var(--muted); flex-wrap: wrap; align-items: center; }
+    .meta-item { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* Buttons */
+    .btn-cta { background: var(--accent); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: var(--radius-sm); font-weight: 700; font-size: 15px; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+    .btn-cta:hover { background: var(--accent-hover); }
+
+    /* Content Layout */
+    .content-container { max-width: 1040px; margin: 28px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 768px) {
+      .content-container { grid-template-columns: 2fr 1fr; }
+    }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-subtle); }
+    .card-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; color: var(--primary); letter-spacing: -0.3px; }
+    .bio-text { font-size: 15px; color: #334155; line-height: 1.6; white-space: pre-line; }
+
+    /* Service Offerings Grid */
+    .service-item { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 16px; }
+    .service-item:last-child { border-bottom: none; }
+    .service-name { font-weight: 700; font-size: 15px; color: var(--primary); }
+    .service-skills { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .service-rate { font-size: 14px; font-weight: 700; color: var(--success); text-align: right; white-space: nowrap; }
+
+    /* Trust & Verification Checklist */
+    .trust-card { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-md); padding: 20px; }
+    .trust-card h3 { font-size: 15px; font-weight: 700; color: #1E40AF; margin-bottom: 12px; }
+    .trust-list { list-style: none; padding: 0; font-size: 13px; color: #1E3A8A; line-height: 1.8; }
+    .trust-list li::before { content: "✓ "; font-weight: 800; color: var(--success); }
+
+    /* Sticky Mobile Conversion Dock */
+    .sticky-dock { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 40; box-shadow: var(--shadow-dock); }
+    @media (min-width: 768px) {
+      .sticky-dock { display: none; }
+    }
+    .dock-label { font-size: 12px; color: var(--muted); }
+    .dock-title { font-weight: 700; font-size: 14px; color: var(--primary); }
+
+    /* Loading & Error States */
+    .state-container { padding: 60px 20px; text-align: center; }
+    .state-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .state-desc { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div class="nav-inner">
+      <a href="?" class="logo">
+        UNIVERSAL MARKETPLACE <span class="logo-badge">PRO</span>
+      </a>
+      <a href="?" class="back-link">&larr; Back to Marketplace</a>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div id="loadingState" class="state-container">
+    <div class="state-title">Loading Professional Storefront...</div>
+    <div class="state-desc">Retrieving verified business credentials.</div>
+  </div>
+
+  <!-- Error / Not Found State -->
+  <div id="errorState" class="state-container" style="display:none;">
+    <div class="state-title" id="errorTitle">Profile Unavailable</div>
+    <div class="state-desc" id="errorDesc">This professional profile is either not found or currently under routine verification review.</div>
+    <a href="?" class="btn-cta">Explore Other Professionals</a>
+  </div>
+
+  <!-- Main Profile View (Populated dynamically) -->
+  <div id="profileView" style="display:none;">
+    <!-- Profile Hero Section -->
+    <section class="profile-hero">
+      <div class="hero-container">
+        <div>
+          <div class="badge-row">
+            <span class="badge-trust" id="badgeTrust">&#10003; VERIFIED PROFESSIONAL</span>
+            <span class="badge-type" id="badgeType">Individual</span>
+          </div>
+          <h1 class="provider-title" id="dispName">Provider Name</h1>
+          <div class="meta-row">
+            <span class="meta-item" id="locDisplay">&#128205; Springfield (25 km radius)</span>
+            <span class="meta-item" id="ratingDisplay">&#9733; 5.0 (0 reviews)</span>
+            <span class="meta-item" id="responseDisplay">&#9889; 98% Response Velocity</span>
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn-cta" onclick="requestThisProviderDirect()">Request Direct Quote</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Columns -->
+    <div class="content-container">
+      <div>
+        <!-- About Section -->
+        <div class="card">
+          <h2 class="card-title">About the Professional</h2>
+          <div class="bio-text" id="bioText">Detailed business description...</div>
+        </div>
+
+        <!-- Services & Capabilities Section -->
+        <div class="card">
+          <h2 class="card-title">Verified Services & Capabilities</h2>
+          <div id="servicesList"></div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Trust & Verification Sidebar Card -->
+        <div class="trust-card">
+          <h3>Verified Platform Standards</h3>
+          <ul class="trust-list">
+            <li>Operating within declared service radius</li>
+            <li>Business domain & technical presence validated</li>
+            <li>Customer contact encrypted in privacy escrow</li>
+            <li>Zero automated charges or unexpected fees</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Mobile Conversion Dock -->
+    <div class="sticky-dock">
+      <div>
+        <div class="dock-label">Direct Engagement</div>
+        <div class="dock-title" id="dockName">Provider Name</div>
+      </div>
+      <button type="button" class="btn-cta" onclick="requestThisProviderDirect()">Request Quote</button>
+    </div>
+  </div>
+
+  <script>
+    var currentProvider = null;
+    var currentSlug = "<?= profileSlug ?>";
+
+    window.addEventListener('DOMContentLoaded', function () {
+      if (!currentSlug) {
+        showError('Missing Profile Identifier', 'Please specify a valid provider profile link.');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function (res) {
+          if (!res || !res.success) {
+            showError('Profile Unavailable', res ? res.error : 'Profile not found.');
+            return;
+          }
+          currentProvider = res.profile;
+          renderProfileView(res.profile);
+        })
+        .withFailureHandler(function (err) {
+          showError('Server Communication Error', err.message);
+        })
+        .getProviderPublicProfileRpc(currentSlug);
+    });
+
+    function renderProfileView(p) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('profileView').style.display = 'block';
+
+      document.getElementById('dispName').innerText = p.displayName;
+      document.getElementById('dockName').innerText = p.displayName;
+      document.getElementById('badgeType').innerText = p.providerType || 'Professional';
+      document.getElementById('locDisplay').innerText = '📍 ' + p.locality + ' (' + p.radiusKm + ' km radius)';
+      document.getElementById('ratingDisplay').innerText = '★ ' + p.ratingAverage + ' (' + p.ratingCount + ' reviews)';
+      document.getElementById('responseDisplay').innerText = '⚡ ' + p.responseRatePct + '% Response Velocity';
+      document.getElementById('bioText').innerText = p.bio;
+
+      var sList = document.getElementById('servicesList');
+      sList.innerHTML = '';
+
+      if (p.services && p.services.length > 0) {
+        p.services.forEach(function (s) {
+          var item = document.createElement('div');
+          item.className = 'service-item';
+          item.innerHTML = '<div>' +
+            '<div class="service-name">' + escapeHtml(s.subcategoryId) + '</div>' +
+            '<div class="service-skills">' + escapeHtml(s.customSkills || 'Standard service offering') + '</div>' +
+            '</div>' +
+            '<div class="service-rate">' + escapeHtml(s.baseRate) + ' ' + (s.rateUnit === 'HOURLY' ? '/ hr' : '') + '</div>';
+          sList.appendChild(item);
+        });
+      } else {
+        sList.innerHTML = '<div style="font-size:14px;color:var(--muted);">General service capabilities offered upon request.</div>';
+      }
+    }
+
+    function showError(title, desc) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('profileView').style.display = 'none';
+      document.getElementById('errorState').style.display = 'block';
+      document.getElementById('errorTitle').innerText = title;
+      document.getElementById('errorDesc').innerText = desc;
+    }
+
+    function requestThisProviderDirect() {
+      if (!currentProvider) return;
+      // Redirect to home discovery wizard pre-locking this direct provider
+      window.location.href = '?direct_provider_id=' + encodeURIComponent(currentProvider.providerId);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
