@@ -3,28 +3,18 @@
  * File: src/controller/Controller.js
  * 
  * HTTP entry points (doGet, doPost) and client-accessible server RPC handlers.
- * Routes traffic to responsive HTMLService templates, processes Stripe webhook postbacks,
- * and handles secure asynchronous calls from client interfaces via google.script.run.
- * 
- * Enforces server-side authorization and input validation on all routes.
- * Compatible with modern V8 runtime.
  */
 
 /**
  * Primary HTTP GET router.
  * Dispatches incoming web traffic to the appropriate HTML template based on URL query parameters.
- * 
- * @param {Object} e - HTTP request event object containing query parameters
- * @return {HtmlOutput} Rendered HTMLService output
  */
 function doGet(e) {
   e = e || { parameter: {} };
   var page = e.parameter.page;
   var action = e.parameter.action;
 
-  // =========================================================================
   // ROUTE 1: Zero-Login Provider Lead Action Portal (Interested / Decline)
-  // =========================================================================
   if (action === 'PROVIDER_LEAD_RESPONSE') {
     var actionTemplate = HtmlService.createTemplateFromFile('LeadAction');
     actionTemplate.decision = e.parameter.decision || '';
@@ -39,9 +29,7 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // =========================================================================
   // ROUTE 2: Public Provider Mini-Site Profile View
-  // =========================================================================
   if (page === 'profile') {
     var slug = e.parameter.slug || '';
     var profileTemplate = HtmlService.createTemplateFromFile('ProviderProfile');
@@ -53,9 +41,7 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // =========================================================================
   // ROUTE 3: Provider Self-Registration Onboarding Wizard
-  // =========================================================================
   if (page === 'signup') {
     return HtmlService.createTemplateFromFile('ProviderSignup').evaluate()
       .setTitle('Join as a Verified Professional | Universal Marketplace')
@@ -63,9 +49,7 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // =========================================================================
   // DEFAULT ROUTE: Universal Customer Discovery, Search & Intake Landing Page
-  // =========================================================================
   var indexTemplate = HtmlService.createTemplateFromFile('Index');
   return indexTemplate.evaluate()
     .setTitle('Universal Marketplace | Connect with Verified Local Professionals')
@@ -76,14 +60,10 @@ function doGet(e) {
 /**
  * Primary HTTP POST router.
  * Ingests external webhook notifications (e.g., Stripe Checkout completed events).
- * 
- * @param {Object} e - HTTP POST event containing postData
- * @return {TextOutput} Raw HTTP response
  */
 function doPost(e) {
   e = e || { parameter: {}, postData: {} };
 
-  // ROUTE: Stripe Payment Webhook
   if (e.parameter.action === 'STRIPE_WEBHOOK') {
     try {
       var rawPayload = e.postData.contents || '';
@@ -103,15 +83,8 @@ function doPost(e) {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
-// ===========================================================================
-// CLIENT-ACCESSIBLE SERVER RPC METHODS (Called via google.script.run)
-// ===========================================================================
-
 /**
  * CLIENT RPC: Retrieves active categories, subcategories, and trust metrics.
- * Called on homepage load to render dynamic discovery chips and dropdowns.
- * 
- * @return {Object} { success: boolean, categories: Array, subcategories: Array, stats: Object }
  */
 function getMarketplaceCatalogRpc() {
   try {
@@ -145,10 +118,6 @@ function getMarketplaceCatalogRpc() {
 
 /**
  * CLIENT RPC: Submits a customer requirement and dispatches Wave 1 matches.
- * Gated by server-side rate limiter and validation.
- * 
- * @param {Object} payload - Requirement payload from Index.html intake wizard
- * @return {Object} { success: boolean, leadId: string|null, trackingToken: string|null, dispatchedCount: number, needsClarification: boolean }
  */
 function submitCustomerRequirementRpc(payload) {
   try {
@@ -156,19 +125,16 @@ function submitCustomerRequirementRpc(payload) {
       return { success: false, error: 'Empty submission payload.' };
     }
 
-    // Rate Limiting Guard: Max 10 submissions per minute per email hash
     var rateKey = 'REQ_' + (payload.email || 'ANONYMOUS').toLowerCase().replace(/[^a-z0-9]/g, '_');
     if (!SecurityService.checkRateLimit(rateKey, 10, 60)) {
       return { success: false, error: 'Too many requests. Please wait a moment before resubmitting.' };
     }
 
-    // Ingest requirement, create escrow customer, and validate lead
     var result = CustomerService.submitRequirement(payload);
     if (!result.success) {
       return result;
     }
 
-    // Trigger initial Wave 1 lead distribution immediately
     var dispatchedCount = DistributionEngine.dispatchInitialWave(result.leadId);
 
     return {
@@ -186,10 +152,6 @@ function submitCustomerRequirementRpc(payload) {
 
 /**
  * CLIENT RPC: Retrieves sanitized public storefront data for a provider mini-site.
- * Strictly withholds private email, telephone, legal name, and internal audit scores.
- * 
- * @param {string} slug - Public mini-site URL slug (e.g., 'apex-carpentry-ltd-a7f9')
- * @return {Object} { success: boolean, profile: Object|null, error: string|null }
  */
 function getProviderPublicProfileRpc(slug) {
   try {
@@ -212,7 +174,6 @@ function getProviderPublicProfileRpc(slug) {
     var services = DAL.find('PROVIDER_SERVICES', function (s) { return s.provider_id === pId; });
     var location = DAL.find('PROVIDER_LOCATIONS', function (l) { return l.provider_id === pId; })[0];
 
-    // Return sanitized storefront data only
     return {
       success: true,
       profile: {
@@ -244,11 +205,7 @@ function getProviderPublicProfileRpc(slug) {
 }
 
 /**
- * CLIENT RPC: Registers a new service provider, sets up location/capabilities,
- * and activates their initial 3 free lead credits in the ledger.
- * 
- * @param {Object} payload - Registration payload from ProviderSignup.html
- * @return {Object} { success: boolean, providerId: string|null, profileSlug: string|null, error: string|null }
+ * CLIENT RPC: Registers a new service provider and activates 3 free leads.
  */
 function registerProviderRpc(payload) {
   try {
@@ -259,7 +216,6 @@ function registerProviderRpc(payload) {
     return DAL.withLock(function () {
       var cleanEmail = payload.email.trim().toLowerCase();
 
-      // Check for duplicate registered email
       var existing = DAL.find('PROVIDERS', function (p) {
         return p.email.toLowerCase() === cleanEmail;
       });
@@ -272,7 +228,6 @@ function registerProviderRpc(payload) {
       var baseSlug = payload.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       var slug = baseSlug + '-' + providerId.substring(5, 9).toLowerCase();
 
-      // 1. Insert Master Provider Record
       DAL.insert('PROVIDERS', {
         provider_id: providerId,
         provider_type: payload.providerType || 'INDIVIDUAL',
@@ -283,7 +238,7 @@ function registerProviderRpc(payload) {
         website_url: payload.websiteUrl ? payload.websiteUrl.trim() : '',
         bio: payload.bio ? payload.bio.trim() : '',
         profile_slug: slug,
-        status: 'VERIFIED', // Approved with 3 free trial leads
+        status: 'VERIFIED',
         verification_level: 'VERIFIED',
         trust_score: 75.0,
         rating_average: 5.0,
@@ -293,7 +248,6 @@ function registerProviderRpc(payload) {
         updated_at: new Date().toISOString()
       });
 
-      // 2. Resolve and Insert Geographic Operating Base
       var geocoded = GeoService.geocodeAddress(payload.locality || 'Springfield');
       DAL.insert('PROVIDER_LOCATIONS', {
         location_id: IdGenerator.location(),
@@ -307,7 +261,6 @@ function registerProviderRpc(payload) {
         postal_code: payload.postalCode || ''
       });
 
-      // 3. Insert Primary Service Capability
       DAL.insert('PROVIDER_SERVICES', {
         provider_service_id: IdGenerator.service(),
         provider_id: providerId,
@@ -318,10 +271,8 @@ function registerProviderRpc(payload) {
         experience_years: Number(payload.experienceYears) || 3
       });
 
-      // 4. Initialize 3 Free Leads Accounting Ledger
       EntitlementService.initializeEntitlement(providerId);
 
-      // 5. Initialize Double-Entry Unified Ledger Entry (+3 Credits)
       DAL.insert('LEDGER_ENTITLEMENTS', {
         ledger_id: IdGenerator.ledger(),
         provider_id: providerId,
@@ -351,15 +302,7 @@ function registerProviderRpc(payload) {
 }
 
 /**
- * CLIENT RPC: Executes the provider claim or pass decision from LeadAction.html.
- * Invoked when provider clicks through the anti-scanner confirmation gate.
- * 
- * @param {string} decision - 'INTERESTED' or 'NOT_INTERESTED'
- * @param {string} leadId - Master lead identifier
- * @param {string} providerId - Responding provider identifier
- * @param {string|number} timestamp - Expiration timestamp
- * @param {string} signature - HMAC-SHA256 signature
- * @return {Object} Status response { success: boolean, code: string, message: string }
+ * CLIENT RPC: Executes provider claim/decline response from LeadAction.html.
  */
 function executeProviderLeadActionRpc(decision, leadId, providerId, timestamp, signature) {
   try {
@@ -371,11 +314,7 @@ function executeProviderLeadActionRpc(decision, leadId, providerId, timestamp, s
 }
 
 /**
- * CLIENT RPC: Retrieves live lead progress for customers using their tracking token.
- * 
- * @param {string} leadId - Master lead identifier
- * @param {string} trackingToken - Signed customer tracking token
- * @return {Object} Tracking status payload
+ * CLIENT RPC: Retrieves live lead tracking status for customers.
  */
 function getCustomerTrackingStatusRpc(leadId, trackingToken) {
   try {
