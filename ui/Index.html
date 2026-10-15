@@ -1094,21 +1094,6 @@
       font-weight: 750;
     }
 
-    .loading-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin-right: 7px;
-      border-radius: 50%;
-      background: currentColor;
-      animation: pulse 1s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { opacity: .3; }
-      to { opacity: 1; }
-    }
-
     /* Responsive layouts */
 
     @media (max-width: 1000px) {
@@ -1952,6 +1937,7 @@
       var carouselIndex = 0;
       var carouselTimer = null;
       var carouselPaused = false;
+      var directProviderId = null; // Captured from ?direct_provider_id=PROV-XXX
 
       var $ = function (id) {
         return document.getElementById(id);
@@ -2002,6 +1988,20 @@
         catalogError.hidden = false;
       }
 
+      function checkUrlParameters() {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var directId = params.get("direct_provider_id") || params.get("provider_id");
+          if (directId) {
+            directProviderId = directId;
+            openModal();
+            $("descText").value = "I would like to request services directly from professional ID: " + directId + ".";
+          }
+        } catch (e) {
+          // URLSearchParams fallback
+        }
+      }
+
       function loadCatalog() {
         if (catalogLoading) return;
 
@@ -2049,6 +2049,8 @@
                 "No active services are currently listed. Please try again later."
               );
             }
+
+            checkUrlParameters();
           })
           .withFailureHandler(function () {
             catalogLoading = false;
@@ -2221,7 +2223,8 @@
           description: $("descText").value.trim(),
           locality: $("localityInput").value.trim(),
           subcategoryId: subcatSelect.value,
-          urgency: $("urgencySelect").value
+          urgency: $("urgencySelect").value,
+          directProviderId: directProviderId || ""
         };
 
         var validationError = validatePayload(payload);
@@ -2267,7 +2270,7 @@
             setText(
               $("trackingInfo"),
               response.leadId
-                ? "Reference: " + response.leadId
+                ? "Reference ID: #" + response.leadId + " (Tracking Active)"
                 : "Your request has been submitted."
             );
 
