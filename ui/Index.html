@@ -1,1 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Marketplace | Connect with Verified Local Professionals</title>
+  <style>
+    :root {
+      --primary: #0F172A;
+      --primary-light: #1E293B;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --border-focus: #2563EB;
+      --text: #0F172A;
+      --muted: #64748B;
+      --success: #059669;
+      --success-bg: #ECFDF5;
+      --danger: #DC2626;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-subtle: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --shadow-modal: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; line-height: 1.5; }
+
+    /* Top Navigation Bar */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; position: sticky; top: 0; z-index: 50; }
+    .nav-inner { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 18px; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
+    .logo-badge { background: var(--accent); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; text-decoration: none; color: var(--text); min-height: 44px; display: inline-flex; align-items: center; transition: all 0.15s; }
+    .btn-secondary:hover { background: #F1F5F9; border-color: #CBD5E1; }
+
+    /* Hero Unit */
+    .hero { max-width: 840px; margin: 40px auto 30px auto; padding: 0 20px; text-align: center; }
+    .hero h1 { font-size: clamp(26px, 5.5vw, 44px); font-weight: 800; line-height: 1.15; margin-bottom: 12px; color: var(--primary); letter-spacing: -0.5px; }
+    .hero p { font-size: 16px; color: var(--muted); margin-bottom: 28px; max-width: 620px; margin-left: auto; margin-right: auto; }
+
+    /* Search & Natural Language Intake Bar */
+    .search-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 8px; }
+    @media (min-width: 640px) {
+      .search-card { flex-direction: row; padding: 6px; }
+    }
+    .search-input { width: 100%; border: none; outline: none; padding: 14px 16px; font-size: 16px; color: var(--text); min-height: 48px; }
+    .btn-primary { background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer; min-height: 48px; white-space: nowrap; transition: background 0.15s; }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    /* Trust Proof Strip */
+    .trust-strip { display: flex; justify-content: center; gap: 24px; margin-top: 24px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+    .trust-item { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+
+    /* Dynamic Service Domains */
+    .section-wrap { max-width: 1080px; margin: 0 auto; padding: 36px 20px; }
+    .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+    .section-title { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .category-chip { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 12px; cursor: pointer; transition: all 0.15s; text-align: center; min-height: 52px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-subtle); }
+    .category-chip:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-card); }
+    .chip-name { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    /* Progressive Intake Wizard Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); display: none; justify-content: center; align-items: flex-end; z-index: 100; backdrop-filter: blur(2px); }
+    @media (min-width: 640px) { .modal-overlay { align-items: center; padding: 20px; } }
+    .modal-card { background: var(--surface); width: 100%; max-width: 560px; border-radius: 16px 16px 0 0; padding: 24px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-modal); }
+    @media (min-width: 640px) { .modal-card { border-radius: var(--radius-lg); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .close-btn { background: transparent; border: none; font-size: 26px; color: var(--muted); cursor: pointer; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+    .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; min-height: 48px; background: #fff; }
+    .form-control:focus { outline: none; border-color: var(--border-focus); }
+    
+    .escrow-notice { font-size: 12px; color: var(--muted); line-height: 1.4; background: #F1F5F9; padding: 12px; border-radius: var(--radius-sm); margin-top: 14px; border-left: 3px solid var(--accent); }
+
+    /* Success / Clarification Card States */
+    .state-panel { padding: 32px 12px; text-align: center; display: none; }
+    .state-icon { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div class="nav-inner">
+      <a href="?" class="logo">
+        UNIVERSAL MARKETPLACE <span class="logo-badge">PRO</span>
+      </a>
+      <a href="?page=signup" class="btn-secondary">List Your Services</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>The right professional for any service requirement.</h1>
+      <p>Autonomous matching. Describe what you need in plain English—our engine matches and notifies verified local professionals instantly.</p>
+      
+      <div class="search-card">
+        <input type="text" id="rawRequirementInput" class="search-input" placeholder="e.g., Need master carpenter for kitchen cabinets in Springfield..." autocomplete="off">
+        <button type="button" class="btn-primary" onclick="handleInitialIntake()">Find Professionals</button>
+      </div>
+
+      <div class="trust-strip">
+        <div class="trust-item">&#10003; 100% Verified Credentials</div>
+        <div class="trust-item">&#128274; Privacy Escrow Protection</div>
+        <div class="trust-item">&#9889; <15m Average Response</div>
+      </div>
+    </section>
+
+    <!-- Dynamic Category Directory -->
+    <section class="section-wrap">
+      <div class="section-header">
+        <h2 class="section-title">Explore Active Service Domains</h2>
+        <span style="font-size:13px; color:var(--muted);" id="domainCount">Loading catalog...</span>
+      </div>
+      <div id="categoryGrid" class="category-grid">
+        <div class="category-chip"><span class="chip-name">Loading services...</span></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Progressive Intake Wizard Modal -->
+  <div id="intakeModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalHeaderTitle" class="modal-title">Complete Your Request</h3>
+        <button class="close-btn" onclick="closeIntakeModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <!-- Step 1: Form Fields -->
+      <div id="wizardForm">
+        <div class="form-group">
+          <label class="form-label" for="subcatSelect">Service Classification</label>
+          <select id="subcatSelect" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="descText">Project Details / Scope</label>
+          <textarea id="descText" class="form-control" rows="3" placeholder="Describe specific requirements, dimensions, or materials..."></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label" for="localityInput">City / Locality</label>
+            <input type="text" id="localityInput" class="form-control" placeholder="Springfield">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="urgencySelect">Timing / Urgency</label>
+            <select id="urgencySelect" class="form-control">
+              <option value="IMMEDIATE">Urgent / Today</option>
+              <option value="HIGH" selected>Within 48 Hours</option>
+              <option value="NORMAL">Standard / Flexible</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="nameInput">Your Full Name</label>
+          <input type="text" id="nameInput" class="form-control" placeholder="Eleanor Vance">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label" for="emailInput">Email Address</label>
+            <input type="email" id="emailInput" class="form-control" placeholder="e.vance@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phoneInput">Phone Number</label>
+            <input type="tel" id="phoneInput" class="form-control" placeholder="+15550198283">
+          </div>
+        </div>
+
+        <div class="escrow-notice">
+          <strong>Privacy Escrow Notice:</strong> Your phone number and email are encrypted. They are released exclusively to the verified professional who accepts your project connection.
+        </div>
+
+        <button type="button" id="submitLeadBtn" class="btn-primary" style="width:100%; margin-top:16px;" onclick="submitLeadWorkflow()">Submit Service Requirement</button>
+      </div>
+
+      <!-- Step 2: Submission Success View -->
+      <div id="successPanel" class="state-panel">
+        <div class="state-icon">&#9989;</div>
+        <h4 style="font-size:20px; font-weight:800; margin-bottom:8px; color:var(--primary);">Request Dispatched!</h4>
+        <p style="font-size:14px; color:var(--muted); line-height:1.5; margin-bottom:16px;">
+          We matched your project against verified local professionals. The top candidates have received your opportunity via secure link.
+        </p>
+        <div style="background:#F1F5F9; padding:12px; border-radius:6px; font-size:13px; font-weight:600; color:var(--primary); margin-bottom:16px;" id="trackingInfo"></div>
+        <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="closeIntakeModal()">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var globalSubcategories = [];
+
+    // Initialize: Fetch dynamic categories from server via RPC
+    window.addEventListener('DOMContentLoaded', function () {
+      google.script.run
+        .withSuccessHandler(function (response) {
+          if (!response || !response.success) return;
+          globalSubcategories = response.subcategories;
+          renderCategoryGrid(response.subcategories);
+          populateSubcatDropdown(response.subcategories);
+          document.getElementById('domainCount').innerText = response.subcategories.length + ' services active';
+        })
+        .withFailureHandler(function (err) {
+          document.getElementById('domainCount').innerText = 'Catalog offline';
+        })
+        .getMarketplaceCatalogRpc();
+    });
+
+    function renderCategoryGrid(subcategories) {
+      var grid = document.getElementById('categoryGrid');
+      grid.innerHTML = '';
+      subcategories.forEach(function (sub) {
+        var card = document.createElement('div');
+        card.className = 'category-chip';
+        card.innerHTML = '<span class="chip-name">' + escapeHtml(sub.subcategory_name) + '</span>';
+        card.onclick = function () {
+          openIntakeWithCategory(sub.subcategory_id, sub.subcategory_name);
+        };
+        grid.appendChild(card);
+      });
+    }
+
+    function populateSubcatDropdown(subcategories) {
+      var select = document.getElementById('subcatSelect');
+      select.innerHTML = '';
+      subcategories.forEach(function (s) {
+        var opt = document.createElement('option');
+        opt.value = s.subcategory_id;
+        opt.text = s.subcategory_name;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleInitialIntake() {
+      var text = document.getElementById('rawRequirementInput').value.trim();
+      if (!text) {
+        alert('Please describe what service you need.');
+        return;
+      }
+      document.getElementById('descText').value = text;
+      document.getElementById('intakeModal').style.display = 'flex';
+      document.getElementById('wizardForm').style.display = 'block';
+      document.getElementById('successPanel').style.display = 'none';
+    }
+
+    function openIntakeWithCategory(subcatId, subcatName) {
+      document.getElementById('subcatSelect').value = subcatId;
+      document.getElementById('descText').value = 'Need professional assistance with ' + subcatName + '.';
+      document.getElementById('intakeModal').style.display = 'flex';
+      document.getElementById('wizardForm').style.display = 'block';
+      document.getElementById('successPanel').style.display = 'none';
+    }
+
+    function closeIntakeModal() {
+      document.getElementById('intakeModal').style.display = 'none';
+    }
+
+    function submitLeadWorkflow() {
+      var btn = document.getElementById('submitLeadBtn');
+      var fullName = document.getElementById('nameInput').value.trim();
+      var email = document.getElementById('emailInput').value.trim();
+      var phone = document.getElementById('phoneInput').value.trim();
+      var desc = document.getElementById('descText').value.trim();
+      var locality = document.getElementById('localityInput').value.trim() || 'Springfield';
+      var subcatId = document.getElementById('subcatSelect').value;
+      var urgency = document.getElementById('urgencySelect').value;
+
+      if (!fullName || !email || !phone || !desc) {
+        alert('Please provide your name, email, phone number, and project description.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Matching Providers...';
+
+      var payload = {
+        fullName: fullName,
+        email: email,
+        phone: phone,
+        description: desc,
+        locality: locality,
+        subcategoryId: subcatId,
+        urgency: urgency
+      };
+
+      google.script.run
+        .withSuccessHandler(function (res) {
+          btn.disabled = false;
+          btn.innerText = 'Submit Service Requirement';
+          if (res && res.success) {
+            document.getElementById('wizardForm').style.display = 'none';
+            document.getElementById('successPanel').style.display = 'block';
+            document.getElementById('trackingInfo').innerText = 'Lead Tracking ID: #' + res.leadId + ' (' + (res.dispatchedCount || 1) + ' providers notified)';
+          } else {
+            alert('Submission notice: ' + (res.error || 'Please check your inputs and try again.'));
+          }
+        })
+        .withFailureHandler(function (err) {
+          btn.disabled = false;
+          btn.innerText = 'Submit Service Requirement';
+          alert('Network communication error: ' + err.message);
+        })
+        .submitCustomerRequirementRpc(payload);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
